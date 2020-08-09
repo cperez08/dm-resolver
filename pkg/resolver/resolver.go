@@ -100,7 +100,7 @@ func (r *DomainResolver) getState() (_ resolver.State, isUpdated bool) {
 		return resolver.State{}, false
 	}
 
-	if hasDiff := !list.CompareListStr(r.IPs, addrstr); !hasDiff {
+	if hasDiff := list.CompareListStr(r.IPs, addrstr); !hasDiff {
 		return resolver.State{}, false
 	}
 
