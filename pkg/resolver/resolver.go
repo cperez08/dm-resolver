@@ -126,7 +126,6 @@ func (r *DomainResolver) resolve() []resolver.Address {
 			addr := ip + ":" + r.port
 			addrs = append(addrs, resolver.Address{Addr: addr})
 		}
-
 	}
 
 	return addrs
@@ -168,7 +167,6 @@ func lookUpByIP(host string) []string {
 		} else {
 			rs = append(rs, "["+ip.String()+"]")
 		}
-
 	}
 
 	return rs
