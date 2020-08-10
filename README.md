@@ -85,8 +85,8 @@ func main(){
     // StartResolver resolves the domain  the firstime and starts the domain watcher if enabled and if the address is not an IP
     r.StartResolver()
 
-    // for knowing the current IPs stored  by the resolver
-    r.IPs // return a list of string in the format host:port
+    // for knowing the current Addresses stored  by the resolver
+    r.Addresses // return a list of string in the format host:port
 
     // for stopping the watcher
     r.Close()

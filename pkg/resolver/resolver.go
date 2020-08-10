@@ -21,13 +21,13 @@ type DomainResolver struct {
 	cc          resolver.ClientConn
 	target      resolver.Target
 	ticker      *time.Ticker
-	IPs         []string
+	Addresses   []string
 	isDone      chan bool
 	needWatcher bool // indicates if the library needs to watch for domain changes
 	address     string
 	port        string
 	updateState bool      // false when the library is used outside gRPC context
-	listener    chan bool // lister that can be used to watch changes in the IPs list
+	listener    chan bool // lister that can be used to watch changes in the Address list
 	needLookup  bool      // indicates if need to look up for new ips in the watcher, no valid for address type IP
 }
 
@@ -37,7 +37,7 @@ type DomainResolver struct {
 func NewResolver(address, port string, needWatcher bool, refreshRate *time.Duration, listener chan bool) *DomainResolver {
 	d := &DomainResolver{address: address, port: port, updateState: false}
 	if net.ParseIP(address) != nil {
-		d.IPs = append(d.IPs, address)
+		d.Addresses = append(d.Addresses, address)
 		d.needLookup = false
 	} else {
 		d.needLookup = true
@@ -55,21 +55,21 @@ func NewResolver(address, port string, needWatcher bool, refreshRate *time.Durat
 // StartResolver resolves by first time the given domain
 func (r *DomainResolver) StartResolver() {
 	if !r.needLookup {
-		addrs := []resolver.Address{{Addr: r.IPs[0]}}
+		addrs := []resolver.Address{{Addr: r.Addresses[0]}}
 		r.cc.UpdateState(resolver.State{Addresses: addrs})
 		return
 	}
 
 	addrs := r.resolve()
 	for _, a := range addrs {
-		r.IPs = append(r.IPs, a.Addr)
+		r.Addresses = append(r.Addresses, a.Addr)
 	}
 
 	if r.needWatcher {
 		go r.watch()
 	}
 
-	sort.Strings(r.IPs)
+	sort.Strings(r.Addresses)
 	if r.updateState {
 		r.cc.UpdateState(resolver.State{Addresses: addrs}) // update the state in the start
 	}
@@ -100,16 +100,16 @@ func (r *DomainResolver) getState() (_ resolver.State, isUpdated bool) {
 		return resolver.State{}, false
 	}
 
-	if hasDiff := list.CompareListStr(r.IPs, addrstr); !hasDiff {
+	if hasDiff := list.CompareListStr(r.Addresses, addrstr); !hasDiff {
 		return resolver.State{}, false
 	}
 
 	r.m.Lock()
-	r.IPs = addrstr
+	r.Addresses = addrstr
 	r.m.Unlock()
 
 	if r.listener != nil {
-		// let know to the listener the IPs were updated
+		// let know to the listener the Addresses were updated
 		r.listener <- true
 	}
 
