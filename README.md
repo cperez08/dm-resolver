@@ -36,7 +36,7 @@ import (
 )
 
 var (
-	scheme      = "my-dns-name"
+	scheme      = "my-scheme-name"
 	host        = "service-address.com"
 	port        = "50051"
 	refreshRate = time.Duration(15) // will be parsed in secs
@@ -50,7 +50,7 @@ func main() {
     }
 
     defer conn.Close()
-    cli = user.NewUserServiceClient(conn)
+    cli = mypkg.NewPkgServiceClient(conn)
 
     cli.Call(ctx, &myRequest{})
 
@@ -83,7 +83,7 @@ func main(){
     // listener listen for changes in the IPs, in case there is no change in the initial set of ips nothing is triggered
     r = resolver..NewResolver(host, port, true, time.Duration(50), listener)
     // StartResolver resolves the domain  the firstime and starts the domain watcher if enabled and if the address is not an IP
-    sr.StartResolver()
+    r.StartResolver()
 
     // for knowing the current IPs stored  by the resolver
     r.IPs // return a list of string in the format host:port
