@@ -95,6 +95,9 @@ func (r *DomainResolver) Close() {
 // GetNewState get a new resolver state
 func (r *DomainResolver) getState() (_ resolver.State, isUpdated bool) {
 	addrs := r.resolve()
+
+	r.m.Lock()
+	defer r.m.Unlock()
 	addrstr := list.FromAddrToString(addrs)
 
 	// experimental, let's skip changes in case of 0 records,
@@ -107,9 +110,7 @@ func (r *DomainResolver) getState() (_ resolver.State, isUpdated bool) {
 		return resolver.State{}, false
 	}
 
-	r.m.Lock()
 	r.Addresses = addrstr
-	r.m.Unlock()
 
 	if r.listener != nil {
 		// let know to the listener the Addresses were updated

@@ -108,15 +108,17 @@ func TestWatchResolver(t *testing.T) {
 	r2 := NewResolver("localhost", "8080", true, &refresh, c2)
 	r2.StartResolver()
 
+	assert.True(t, len(r2.Addresses) > 0)
+	assert.True(t, len(r.Addresses) == 1)
+}
+
+func TestWatchResolverFromBuilder(t *testing.T) {
+	refresh := time.Duration(1)
 	rb := NewDomainResolverBuilder("my-schema", "localhost", "8080", true, &refresh)
 	rr, err := rb.Build(resolver.Target{Scheme: "test-schema", Endpoint: "localhost:8080"}, &TestResolver{}, resolver.BuildOptions{})
 	assert.Nil(t, err)
 	parsed := rr.(*DomainResolver)
-	parsed.StartResolver()
 
-	time.Sleep(time.Second * 2)
-
-	assert.True(t, len(r2.Addresses) > 0)
-	assert.True(t, len(r.Addresses) == 1)
+	<-parsed.ticker.C
 	assert.True(t, len(parsed.Addresses) > 0)
 }
