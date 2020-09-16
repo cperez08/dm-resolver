@@ -12,10 +12,9 @@ import (
 )
 
 // DomainResolver is a custom resolver library that helps to resolve a
-// domain returing a list of IPS associated to it, also with posibilty to watch for DNS
+// domain returning a list of IPs associated with it, also with posibilty to watch for DNS
 // changes, the library can be used either by the resolver builder
-// for gRPC or as a independent library
-// also implement resolver.Resolver
+// for gRPC or as a independent library also implement resolver.Resolver
 type DomainResolver struct {
 	m           sync.Mutex
 	cc          resolver.ClientConn
@@ -31,8 +30,8 @@ type DomainResolver struct {
 	needLookup  bool      // indicates if need to look up for new ips in the watcher, no valid for address type IP
 }
 
-// NewResolver creates a new resolver instance
-// if needWatcher is true a time in seconds is expected in the refreshRate parameter
+// NewResolver creates a new resolver instance, if needWatcher is true
+// a time in seconds is expected in the refreshRate parameter
 // the ticker field is exported in case want to be updated or stoped
 func NewResolver(address, port string, needWatcher bool, refreshRate *time.Duration, listener chan bool) *DomainResolver {
 	d := &DomainResolver{address: address, port: port, updateState: false}
@@ -56,7 +55,9 @@ func NewResolver(address, port string, needWatcher bool, refreshRate *time.Durat
 func (r *DomainResolver) StartResolver() {
 	if !r.needLookup {
 		addrs := []resolver.Address{{Addr: r.Addresses[0]}}
-		r.cc.UpdateState(resolver.State{Addresses: addrs})
+		if r.updateState {
+			r.cc.UpdateState(resolver.State{Addresses: addrs})
+		}
 		return
 	}
 
@@ -71,7 +72,7 @@ func (r *DomainResolver) StartResolver() {
 
 	sort.Strings(r.Addresses)
 	if r.updateState {
-		r.cc.UpdateState(resolver.State{Addresses: addrs}) // update the state in the start
+		r.cc.UpdateState(resolver.State{Addresses: addrs}) // update the state in the start, only gRPC
 	}
 }
 
@@ -86,7 +87,9 @@ func (r *DomainResolver) ResolveNow(o resolver.ResolveNowOptions) {
 
 // Close stops watching for changes in the domain
 func (r *DomainResolver) Close() {
-	r.isDone <- true
+	if r.isDone != nil && r.needWatcher {
+		r.isDone <- true
+	}
 }
 
 // GetNewState get a new resolver state
@@ -134,10 +137,6 @@ func (r *DomainResolver) resolve() []resolver.Address {
 // watch watches every X secods for changes in the domain
 // in order to update the state if enabled
 func (r *DomainResolver) watch() {
-	if !r.needLookup {
-		return
-	}
-
 	for {
 		select {
 		case <-r.isDone:

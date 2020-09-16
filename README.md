@@ -63,7 +63,7 @@ func init(){
     // port number
     // true indicates if the resolver needs to watch for changes - only aplicable for domains
     // 50 indicates the value in seconds the resolver look for the changes in the domain.
-    resolver.Register(rsv.NewDomainResolverBuilder(scheme, host, port, true, time.Duration(50)))
+    resolver.Register(rsv.NewDomainResolverBuilder(scheme, host, port, true, &refreshRate))
 }
 
 ```
@@ -80,8 +80,9 @@ func main(){
     // port to connecto to
     // true indicates if the wants the resolver to watch for domain changes
     // time.Duration(50) in case the previous parameter is true, is the refresh rate (new domain lookup)
+    refreshRate := time.Duration(50)
     // listener listen for changes in the IPs, in case there is no change in the initial set of ips nothing is triggered
-    r = resolver..NewResolver(host, port, true, time.Duration(50), listener)
+    r = resolver.NewResolver(host, port, true, &refreshRate, listener)
     // StartResolver resolves the domain  the firstime and starts the domain watcher if enabled and if the address is not an IP
     r.StartResolver()
 
@@ -92,8 +93,5 @@ func main(){
     r.Close()
 }
 ```
-
-## TODO
-- [ ] Unit testing
 
 Disclaimer: the issue commented above occurred on alpine >= 3.10.5 and <= 3.12 and was never tested with other Linux distros. In local environment the gRPC DNS resolver worked perfectly.
