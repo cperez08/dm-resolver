@@ -1,5 +1,10 @@
 # dm-resolver
 
+[![GoDoc](https://godoc.org/github.com/cperez08/dm-resolver?status.svg)](https://pkg.go.dev/github.com/cperez08/dm-resolver?tab=overview)
+[![codebeat badge](https://codebeat.co/badges/0ca3027a-1ff3-4d88-8aab-baba8f8bf114)](https://codebeat.co/projects/github-com-cperez08-dm-resolver-master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cperez08/dm-resolver)](https://goreportcard.com/report/github.com/cperez08/dm-resolver)
+[![codecov](https://codecov.io/gh/cperez08/dm-resolver/branch/master/graph/badge.svg)](https://codecov.io/gh/cperez08/dm-resolver)
+
 dm-resolver is a light way resolver library based on IP lookup and inspired by the default gRPC resolver.
 
 ## Usage

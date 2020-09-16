@@ -154,20 +154,24 @@ func (r *DomainResolver) watch() {
 
 // lookUpByIP ...
 func lookUpByIP(host string) []string {
-	rs := []string{}
-	records, err := net.LookupIP(host)
+	ips, err := net.LookupIP(host)
 	if err != nil {
 		log.Println("[grpc-resolver]: error looking up for ips ", err)
-		return rs
+		return []string{}
 	}
 
-	for _, ip := range records {
+	return pushRecords(ips)
+}
+
+func pushRecords(ips []net.IP) []string {
+	records := []string{}
+	for _, ip := range ips {
 		if ip.To4() != nil {
-			rs = append(rs, ip.String())
+			records = append(records, ip.String())
 		} else {
-			rs = append(rs, "["+ip.String()+"]")
+			records = append(records, "["+ip.String()+"]")
 		}
 	}
 
-	return rs
+	return records
 }
