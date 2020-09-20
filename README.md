@@ -33,7 +33,7 @@ For instance:
 package main
 
 import (
-    rsv "github.com/cperez08/dm-resolver/pkg/resolver"
+    dmresolver "github.com/cperez08/dm-resolver/pkg/resolver"
     "google.golang.org/grpc"
     "google.golang.org/grpc/balancer/roundrobin"
     "google.golang.org/grpc/metadata"
@@ -44,7 +44,7 @@ var (
 	scheme      = "my-scheme-name"
 	host        = "service-address.com"
 	port        = "50051"
-	refreshRate = time.Duration(15) // will be parsed in secs
+	refreshRate = time.Duration(15) // will be parsed in seconds
 )
 
 func main() { 
@@ -68,7 +68,7 @@ func init(){
     // port number
     // true indicates if the resolver needs to watch for changes - only aplicable for domains
     // 50 indicates the value in seconds the resolver look for the changes in the domain.
-    resolver.Register(rsv.NewDomainResolverBuilder(scheme, host, port, true, &refreshRate))
+    resolver.Register(dmresolver.NewDomainResolverBuilder(scheme, host, port, true, &refreshRate))
 }
 
 ```
@@ -99,4 +99,4 @@ func main(){
 }
 ```
 
-Disclaimer: the issue commented above occurred on alpine >= 3.10.5 and <= 3.12 and was never tested with other Linux distros. In local environment the gRPC DNS resolver worked perfectly.
+Disclaimer: the issue commented above occurred on alpine >= 3.10.5 and <= 3.12 and was never tested with other Linux distros. In local environment (mac os) the default gRPC DNS resolver worked perfectly.
