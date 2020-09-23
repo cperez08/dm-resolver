@@ -99,4 +99,4 @@ func main(){
 }
 ```
 
-Disclaimer: the issue commented above occurred on alpine >= 3.10.5 and <= 3.12 and was never tested with other Linux distros. In local environment (mac os) the default gRPC DNS resolver worked perfectly.
+Disclaimer: the issue commented above occurred on linux alpine and ubuntu bionic in Kubernetes
